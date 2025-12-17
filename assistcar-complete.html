@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssistCar - Asistencia Vehicular 24/7</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+        
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .slide-in {
+            animation: slideIn 1s ease-out 0.3s both;
+        }
+        
+        .pulse-anim {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .bounce-anim {
+            animation: bounce 1s infinite;
+        }
+        
+        /* Mobile-first container */
+        #app {
+            max-width: 430px;
+            margin: 0 auto;
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Star rating styles */
+        .star {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .star:hover {
+            transform: scale(1.1);
+        }
+        
+        .star.filled {
+            fill: #FACC15;
+            color: #FACC15;
+        }
+        
+        .star.empty {
+            fill: none;
+            color: #D1D5DB;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- SPLASH SCREEN -->
+        <div id="splash" class="screen active">
+            <div class="h-full w-full bg-gradient-to-br from-blue-500 via-teal-500 to-green-400 flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
+                <!-- Decorative circles -->
+                <div class="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute bottom-32 right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                
+                <!-- Logo and Content - Centered -->
+                <div class="fade-in z-10 flex-1 flex flex-col items-center justify-center">
+                    <!-- Logo -->
+                    <div class="flex items-center justify-center mb-8">
+                        <img src="https://i.imgur.com/placeholder-logo.png" alt="AssistCar Logo" class="w-64 h-auto drop-shadow-2xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; width: 240px; height: 240px; background: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                            <svg width="180" height="180" viewBox="0 0 200 200" style="margin-bottom: 10px;">
+                                <!-- Shield background -->
+                                <path d="M100 20 L160 50 L160 110 Q160 150 100 180 Q40 150 40 110 L40 50 Z" fill="url(#gradient1)" stroke="#2563EB" stroke-width="3"/>
+                                <defs>
+                                    <linearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#14B8A6;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <!-- Car icon simplified -->
+                                <rect x="70" y="90" width="60" height="30" rx="5" fill="white"/>
+                                <circle cx="80" cy="125" r="8" fill="white"/>
+                                <circle cx="120" cy="125" r="8" fill="white"/>
+                                <!-- Person icon -->
+                                <circle cx="60" cy="70" r="8" fill="white"/>
+                                <path d="M60 80 L55 95 L65 95 Z" fill="white"/>
+                                <!-- Wrench icon -->
+                                <path d="M130 65 L140 75 L135 80 L125 70 Z" fill="white" stroke="white" stroke-width="2"/>
+                            </svg>
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; font-weight: bold; background: linear-gradient(to right, #2563EB, #14B8A6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AssistCar</div>
+                                <div style="font-size: 10px; color: #6B7280; margin-top: 4px;">24/7 ROADSIDE ASSISTANCE</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tagline -->
+                    <p class="text-white/95 text-xl text-center px-4 max-w-md mb-4">
+                        Menos estrés en emergencias vehiculares
+                    </p>
+                    <p class="text-white/80 text-center px-4">
+                        Asistencia las 24 horas, los 7 días de la semana
+                    </p>
+                </div>
+                
+                <!-- Auth Buttons -->
+                <div class="slide-in w-full max-w-sm space-y-4 z-10 pb-8">
+                    <!-- Login Button -->
+                    <button onclick="navigateTo('home')" class="w-full bg-white text-blue-600 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95">
+                        <span class="text-lg font-medium">Iniciar sesión</span>
+                    </button>
+                    
+                    <!-- Register Button -->
+                    <button onclick="navigateTo('home')" class="w-full bg-white/10 backdrop-blur-sm text-white py-4 rounded-2xl border-2 border-white/40 hover:bg-white/20 transition-all transform hover:scale-105 active:scale-95">
+                        <span class="text-lg font-medium">Registrarse</span>
+                    </button>
+                    
+                    <!-- Guest Access -->
+                    <button onclick="navigateTo('home')" class="w-full text-white/80 py-3 hover:text-white transition-colors">
+                        <span class="underline">Continuar como invitado</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HOME SCREEN -->
+        <div id="home" class="screen">
+            <div class="h-full w-full bg-gradient-to-br from-blue-50 to-green-50 flex flex-col">
+                <!-- Header -->
+                <div class="px-6 pt-14 pb-6 bg-white/80 backdrop-blur-sm shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h1 class="text-2xl text-gray-800 mb-1 font-semibold">Hola 👋</h1>
+                            <p class="text-gray-600">¿Necesitas ayuda?</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="navigateTo('notifications')" class="p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                            </button>
+                            <button class="p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-700"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="flex-1 px-6 py-8 overflow-y-auto">
+                    <!-- Emergency CTA -->
+                    <button onclick="navigateTo('service')" class="w-full bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 mb-8">
+                        <div class="flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                        </div>
+                        <h2 class="text-2xl font-semibold mb-2">Pedir ayuda ahora</h2>
+                        <p class="text-blue-100">Asistencia en menos de 30 segundos</p>
+                    </button>
+
+                    <!-- Services Grid -->
+                    <div class="mb-6">
+                        <h3 class="text-gray-700 font-medium mb-4">¿Qué necesitas?</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="navigateTo('service')" class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                                <div class="bg-blue-500 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 mx-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                                </div>
+                                <p class="text-gray-700 text-center">Llanta pinchada</p>
+                            </button>
+                            
+                            <button onclick="navigateTo('service')" class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                                <div class="bg-green-500 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 mx-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="6" x2="6" y1="11" y2="11"/><line x1="10" x2="10" y1="11" y2="11"/></svg>
+                                </div>
+                                <p class="text-gray-700 text-center">Batería</p>
+                            </button>
+                            
+                            <button onclick="navigateTo('service')" class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                                <div class="bg-teal-500 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 mx-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                </div>
+                                <p class="text-gray-700 text-center">Grúa</p>
+                            </button>
+                            
+                            <button onclick="navigateTo('service')" class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                                <div class="bg-orange-500 w-14 h-14 rounded-2xl flex items-center justify-center mb-3 mx-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                </div>
+                                <p class="text-gray-700 text-center">Emergencia</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Safety Message -->
+                    <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-2xl p-5 border border-teal-200">
+                        <p class="text-teal-800 text-center">
+                            🛡️ Todos nuestros técnicos están verificados y calificados
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVICE DETAILS SCREEN -->
+        <div id="service" class="screen">
+            <div class="h-full w-full bg-gradient-to-br from-blue-50 to-green-50 overflow-y-auto">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-teal-500 px-6 pt-14 pb-8">
+                    <button onclick="navigateTo('home')" class="mb-6 p-2 bg-white/20 backdrop-blur-sm rounded-full">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <h1 class="text-white text-2xl font-semibold mb-1">Describe tu problema</h1>
+                    <p class="text-blue-100">Esto nos ayuda a enviarte el mejor técnico</p>
+                </div>
+
+                <!-- Content -->
+                <div class="px-6 py-6">
+                    <!-- Problem Type -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <label class="block text-gray-700 font-medium mb-3">¿Qué tipo de problema tienes?</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="p-4 border-2 border-blue-500 bg-blue-50 rounded-xl text-blue-700 font-medium transition-all">
+                                Llanta pinchada
+                            </button>
+                            <button class="p-4 border-2 border-gray-200 rounded-xl text-gray-600 hover:border-gray-300 transition-all">
+                                Batería
+                            </button>
+                            <button class="p-4 border-2 border-gray-200 rounded-xl text-gray-600 hover:border-gray-300 transition-all">
+                                Grúa
+                            </button>
+                            <button class="p-4 border-2 border-gray-200 rounded-xl text-gray-600 hover:border-gray-300 transition-all">
+                                Otro
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <label class="block text-gray-700 font-medium mb-3">Detalles adicionales (opcional)</label>
+                        <textarea class="w-full h-24 p-4 bg-gray-50 rounded-xl border border-gray-200 focus:border-blue-500 focus:outline-none resize-none" placeholder="Ej: La llanta delantera derecha está completamente desinflada..."></textarea>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <label class="block text-gray-700 font-medium mb-3">Tu ubicación</label>
+                        <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span class="text-gray-700 flex-1">Av. Javier Prado Este 4200, Lima</span>
+                            <button class="text-blue-600 text-sm font-medium">Cambiar</button>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Info -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <label class="block text-gray-700 font-medium mb-3">Información del vehículo</label>
+                        <input type="text" class="w-full p-4 mb-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-blue-500 focus:outline-none" placeholder="Marca (Ej: Toyota)">
+                        <input type="text" class="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:border-blue-500 focus:outline-none" placeholder="Modelo (Ej: Corolla 2020)">
+                    </div>
+
+                    <!-- Confirm Button -->
+                    <button onclick="navigateTo('location')" class="w-full bg-gradient-to-r from-blue-600 to-teal-500 text-white py-5 rounded-2xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 active:scale-95 font-medium text-lg mb-4">
+                        Confirmar solicitud
+                    </button>
+
+                    <!-- Estimated time -->
+                    <div class="text-center text-gray-600">
+                        <p class="text-sm">⏱️ Tiempo estimado de llegada: 15-20 min</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOCATION TRACKING SCREEN -->
+        <div id="location" class="screen">
+            <div class="h-full w-full bg-gray-100 relative">
+                <!-- Map placeholder -->
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
+                    <div class="text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-blue-600 mb-4 opacity-30"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <p class="text-gray-500">Mapa de ubicación</p>
+                    </div>
+                </div>
+
+                <!-- Top info card -->
+                <div class="absolute top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-lg p-6 pt-14">
+                    <div class="flex items-center justify-between mb-4">
+                        <button onclick="navigateTo('home')" class="p-2 bg-gray-100 rounded-full">
+                            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <div class="px-4 py-2 bg-green-100 rounded-full">
+                            <span class="text-green-700 font-medium text-sm">● En camino</span>
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-gray-800 text-xl font-semibold mb-2">Tu técnico está en camino</h2>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>Llegada estimada: 12 minutos</span>
+                    </div>
+                </div>
+
+                <!-- Bottom technician card -->
+                <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl p-6">
+                    <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <img src="https://images.unsplash.com/photo-1708745427274-d5de5122fd57?w=100" alt="Luan Lau" class="w-16 h-16 rounded-xl object-cover">
+                        <div class="flex-1">
+                            <h3 class="text-gray-800 font-semibold">Luan Lau</h3>
+                            <p class="text-gray-600 text-sm">Técnico Mecánico Senior</p>
+                            <div class="flex items-center gap-1 mt-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="#FACC15" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <span class="text-gray-700 text-sm font-medium">4.9</span>
+                                <span class="text-gray-500 text-sm">(127 servicios)</span>
+                            </div>
+                        </div>
+                        <button onclick="navigateTo('technician')" class="p-3 bg-blue-100 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button class="flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <span class="font-medium">Llamar</span>
+                        </button>
+                        <button onclick="navigateTo('calm')" class="flex items-center justify-center gap-2 py-4 bg-teal-100 text-teal-700 rounded-2xl hover:bg-teal-200 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span class="font-medium">Chat</span>
+                        </button>
+                    </div>
+
+                    <!-- Emergency contact -->
+                    <div class="bg-orange-50 rounded-xl p-4 border border-orange-200">
+                        <p class="text-orange-800 text-sm text-center">
+                            <span class="font-medium">¿Necesitas ayuda urgente?</span> Llama al <span class="font-semibold">911</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TECHNICIAN PROFILE SCREEN -->
+        <div id="technician" class="screen">
+            <div class="h-full w-full bg-gradient-to-br from-blue-50 to-green-50 overflow-y-auto">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-teal-500 px-6 pt-14 pb-8">
+                    <button onclick="navigateTo('location')" class="mb-6 p-2 bg-white/20 backdrop-blur-sm rounded-full">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <h1 class="text-white text-2xl font-semibold mb-1">Perfil del técnico</h1>
+                    <p class="text-blue-100">Conoce a tu profesional</p>
+                </div>
+
+                <!-- Content -->
+                <div class="px-6 py-6">
+                    <!-- Profile Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+                        <div class="flex items-start gap-4 mb-6">
+                            <img src="https://images.unsplash.com/photo-1708745427274-d5de5122fd57?w=150" alt="Luan Lau" class="w-20 h-20 rounded-2xl object-cover">
+                            
+                            <div class="flex items-center justify-center bg-blue-100 w-12 h-12 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <h2 class="text-xl text-gray-800 font-semibold mb-1">Luan Lau</h2>
+                            <p class="text-gray-600 mb-2">Técnico Mecánico Senior</p>
+                            
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#FACC15" stroke="#FACC15" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <span class="text-gray-800 font-medium">4.9</span>
+                                </div>
+                                <span class="text-gray-500">•</span>
+                                <span class="text-gray-600">127 servicios</span>
+                                <span class="text-gray-500">•</span>
+                                <span class="text-gray-600">5 años exp.</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <button class="flex items-center justify-center gap-1 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                    <span class="text-sm font-medium">Llamar</span>
+                                </button>
+                                <button class="flex items-center justify-center gap-1 py-3 bg-teal-100 text-teal-700 rounded-xl hover:bg-teal-200 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    <span class="text-sm font-medium">Chat</span>
+                                </button>
+                                <button class="flex items-center justify-center gap-1 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <h3 class="text-gray-800 font-semibold mb-3">Acerca de</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Técnico certificado con más de 5 años de experiencia en asistencia vehicular. Especializado en cambios de llanta, problemas de batería y diagnóstico rápido. Comprometido con brindar un servicio profesional y tranquilo.
+                        </p>
+                    </div>
+
+                    <!-- Specialties -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <h3 class="text-gray-800 font-semibold mb-3">Especialidades</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm">Cambio de llanta</span>
+                            <span class="px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm">Batería</span>
+                            <span class="px-4 py-2 bg-teal-50 text-teal-700 rounded-full text-sm">Grúa</span>
+                            <span class="px-4 py-2 bg-purple-50 text-purple-700 rounded-full text-sm">Diagnóstico</span>
+                        </div>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md">
+                        <h3 class="text-gray-800 font-semibold mb-4">Últimas reseñas</h3>
+                        
+                        <!-- Review 1 -->
+                        <div class="pb-4 mb-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray-800 font-medium">María López</span>
+                                <div class="flex gap-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm">Excelente servicio. Muy profesional y rápido. Me explicó todo con paciencia.</p>
+                            <span class="text-gray-400 text-xs">Hace 2 días</span>
+                        </div>
+
+                        <!-- Review 2 -->
+                        <div class="pb-4 mb-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray-800 font-medium">Jorge Ramírez</span>
+                                <div class="flex gap-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm">Llegó muy rápido y resolvió mi problema de batería en minutos. Muy recomendado!</p>
+                            <span class="text-gray-400 text-xs">Hace 1 semana</span>
+                        </div>
+
+                        <!-- Review 3 -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray-800 font-medium">Ana Torres</span>
+                                <div class="flex gap-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#FACC15" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#D1D5DB" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm">Persona muy amable y servicial. Me ayudó con mi llanta y me dio consejos útiles.</p>
+                            <span class="text-gray-400 text-xs">Hace 2 semanas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALM ASSISTANCE SCREEN -->
+        <div id="calm" class="screen">
+            <div class="h-full w-full bg-gradient-to-br from-teal-50 to-blue-50 overflow-y-auto">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-teal-600 to-blue-500 px-6 pt-14 pb-8">
+                    <button onclick="navigateTo('location')" class="mb-6 p-2 bg-white/20 backdrop-blur-sm rounded-full">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <h1 class="text-white text-2xl font-semibold mb-1">Respira y relájate</h1>
+                    <p class="text-teal-100">Todo estará bien, estamos aquí para ayudarte</p>
+                </div>
+
+                <!-- Content -->
+                <div class="px-6 py-6">
+                    <!-- Breathing Exercise -->
+                    <div class="bg-white rounded-3xl p-8 shadow-lg mb-6 text-center">
+                        <div class="mb-6">
+                            <div class="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center shadow-xl pulse-anim">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.54 15H17a2 2 0 0 0-2 2v4.54M7 3.34V5a3 3 0 0 0 3 3v0a2 2 0 0 1 2 2v0c0 1.1.9 2 2 2v0a2 2 0 0 0 2-2v0c0-1.1.9-2 2-2h3.17M11 21.95V18a2 2 0 0 0-2-2v0a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/></svg>
+                            </div>
+                        </div>
+                        <h2 class="text-xl text-gray-800 font-semibold mb-3">Ejercicio de respiración</h2>
+                        <p class="text-gray-600 mb-4">Inhala profundamente por 4 segundos, mantén 4 segundos, exhala 4 segundos</p>
+                        <button class="px-8 py-3 bg-gradient-to-r from-teal-600 to-blue-500 text-white rounded-2xl hover:shadow-lg transition-all">
+                            Comenzar
+                        </button>
+                    </div>
+
+                    <!-- Reassurance Messages -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-800 font-medium mb-1">Estás en buenas manos</h3>
+                                <p class="text-gray-600 text-sm">Tu técnico está en camino y tiene más de 5 años de experiencia</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-800 font-medium mb-1">Estás seguro</h3>
+                                <p class="text-gray-600 text-sm">Conocemos tu ubicación y monitoremos tu servicio en tiempo real</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-teal-600"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-800 font-medium mb-1">Será rápido</h3>
+                                <p class="text-gray-600 text-sm">Tiempo estimado de llegada: 12 minutos. El técnico está muy cerca</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Tips -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-5">
+                        <h3 class="text-gray-800 font-semibold mb-3">Mientras esperas</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-600 mt-0.5">✓</span>
+                                <span class="text-gray-600 text-sm">Mantente dentro del vehículo si es seguro</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-600 mt-0.5">✓</span>
+                                <span class="text-gray-600 text-sm">Enciende las luces de emergencia</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-600 mt-0.5">✓</span>
+                                <span class="text-gray-600 text-sm">Evita estar en la vía si hay tráfico</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-blue-600 mt-0.5">✓</span>
+                                <span class="text-gray-600 text-sm">Ten tus documentos a mano</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Support -->
+                    <div class="bg-gradient-to-r from-blue-600 to-teal-500 rounded-2xl p-5 text-white text-center">
+                        <p class="mb-3">¿Necesitas hablar con alguien?</p>
+                        <button class="px-6 py-3 bg-white text-blue-600 rounded-xl hover:bg-blue-50 transition-colors font-medium">
+                            Contactar soporte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS SCREEN -->
+        <div id="notifications" class="screen">
+            <div class="h-full w-full bg-gradient-to-br from-blue-50 to-green-50 overflow-y-auto">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-teal-500 px-6 pt-14 pb-8">
+                    <button onclick="navigateTo('home')" class="mb-6 p-2 bg-white/20 backdrop-blur-sm rounded-full">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <h1 class="text-white text-2xl font-semibold mb-1">Notificaciones y Tips</h1>
+                    <p class="text-blue-100">Mantente informado y seguro</p>
+                </div>
+
+                <!-- Tabs -->
+                <div class="px-6 pt-6">
+                    <div class="flex gap-3 mb-6">
+                        <button onclick="showNotificationTab('notifications')" id="tab-notifications" class="flex-1 py-3 bg-white text-blue-600 rounded-xl shadow-md font-medium">
+                            Notificaciones
+                        </button>
+                        <button onclick="showNotificationTab('tips')" id="tab-tips" class="flex-1 py-3 bg-white/50 text-gray-600 rounded-xl font-medium">
+                            Tips
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notifications Content -->
+                <div id="content-notifications" class="px-6 pb-6">
+                    <!-- Notification 1 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-gray-800 font-medium mb-1">Servicio completado</h3>
+                                <p class="text-gray-600 text-sm mb-2">Tu cambio de llanta fue completado exitosamente. ¡Califica a tu técnico!</p>
+                                <span class="text-gray-400 text-xs">Hace 2 horas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 2 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-gray-800 font-medium mb-1">Técnico asignado</h3>
+                                <p class="text-gray-600 text-sm mb-2">Luan Lau está en camino a tu ubicación. Tiempo estimado: 12 min</p>
+                                <span class="text-gray-400 text-xs">Hace 15 min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 3 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-600"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-gray-800 font-medium mb-1">Consejo de seguridad</h3>
+                                <p class="text-gray-600 text-sm mb-2">Recuerda revisar la presión de tus llantas cada mes para evitar problemas</p>
+                                <span class="text-gray-400 text-xs">Hace 1 día</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification 4 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-600"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-gray-800 font-medium mb-1">Nueva función disponible</h3>
+                                <p class="text-gray-600 text-sm mb-2">Ahora puedes guardar tus ubicaciones favoritas para solicitudes más rápidas</p>
+                                <span class="text-gray-400 text-xs">Hace 3 días</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Content -->
+                <div id="content-tips" class="px-6 pb-6" style="display: none;">
+                    <!-- Tip 1 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            </div>
+                            <h3 class="text-gray-800 font-semibold flex-1">Revisión mensual de llantas</h3>
+                        </div>
+                        <p class="text-gray-600 mb-3">
+                            Revisa la presión de tus llantas una vez al mes. La presión correcta mejora el rendimiento de combustible y evita desgaste irregular.
+                        </p>
+                        <div class="bg-blue-50 rounded-xl p-3">
+                            <p class="text-blue-800 text-sm">💡 <strong>Consejo:</strong> Revisa las llantas cuando estén frías, antes de conducir.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tip 2 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="6" x2="6" y1="11" y2="11"/><line x1="10" x2="10" y1="11" y2="11"/></svg>
+                            </div>
+                            <h3 class="text-gray-800 font-semibold flex-1">Cuidado de la batería</h3>
+                        </div>
+                        <p class="text-gray-600 mb-3">
+                            Las baterías típicamente duran 3-5 años. Si notas que el motor arranca lento o las luces se atenúan, es hora de revisarla.
+                        </p>
+                        <div class="bg-green-50 rounded-xl p-3">
+                            <p class="text-green-800 text-sm">💡 <strong>Consejo:</strong> Limpia los terminales de la batería regularmente para evitar corrosión.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tip 3 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <h3 class="text-gray-800 font-semibold flex-1">Kit de emergencia</h3>
+                        </div>
+                        <p class="text-gray-600 mb-3">
+                            Siempre ten un kit de emergencia en tu auto: triángulos de seguridad, linterna, cables de batería, botiquín y agua.
+                        </p>
+                        <div class="bg-orange-50 rounded-xl p-3">
+                            <p class="text-orange-800 text-sm">💡 <strong>Consejo:</strong> Revisa tu llanta de repuesto cada 6 meses.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tip 4 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            </div>
+                            <h3 class="text-gray-800 font-semibold flex-1">Mantenimiento preventivo</h3>
+                        </div>
+                        <p class="text-gray-600 mb-3">
+                            Sigue el calendario de mantenimiento de tu vehículo. El mantenimiento preventivo puede ahorrarte dinero a largo plazo.
+                        </p>
+                        <div class="bg-purple-50 rounded-xl p-3">
+                            <p class="text-purple-800 text-sm">💡 <strong>Consejo:</strong> Cambia el aceite cada 5,000 km o según el fabricante.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REVIEW SCREEN -->
+        <div id="review" class="screen">
+            <div class="h-full w-full bg-gradient-to-br from-blue-50 to-green-50 overflow-y-auto">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-teal-500 px-6 pt-14 pb-8">
+                    <button onclick="navigateTo('home')" class="mb-6 p-2 bg-white/20 backdrop-blur-sm rounded-full">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    
+                    <h1 class="text-white text-2xl font-semibold mb-1">Califica el servicio</h1>
+                    <p class="text-blue-100">Tu opinión es importante para nosotros</p>
+                </div>
+
+                <!-- Content -->
+                <div class="px-6 py-6">
+                    <!-- Technician Info -->
+                    <div class="bg-white rounded-2xl p-5 shadow-md mb-6">
+                        <div class="flex items-start gap-4 mb-6">
+                            <img src="https://images.unsplash.com/photo-1708745427274-d5de5122fd57?w=100" alt="Luan Lau" class="w-16 h-16 rounded-xl object-cover">
+                            <div>
+                                <h3 class="text-gray-800 font-semibold mb-1">Luan Lau</h3>
+                                <p class="text-gray-600 text-sm">Cambio de llanta</p>
+                                <p class="text-gray-500 text-xs">17 de diciembre, 2025</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating Stars -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+                        <h2 class="text-gray-800 text-center font-medium mb-4">¿Cómo calificas el servicio?</h2>
+                        <div class="flex items-center justify-center gap-3 mb-2" id="star-rating">
+                            <svg class="star w-12 h-12 empty" onclick="setRating(1)" data-rating="1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg class="star w-12 h-12 empty" onclick="setRating(2)" data-rating="2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg class="star w-12 h-12 empty" onclick="setRating(3)" data-rating="3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg class="star w-12 h-12 empty" onclick="setRating(4)" data-rating="4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg class="star w-12 h-12 empty" onclick="setRating(5)" data-rating="5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <p id="rating-text" class="text-center text-gray-600 mt-2 min-h-6"></p>
+                    </div>
+
+                    <!-- Quick Feedback -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+                        <h2 class="text-gray-800 font-medium mb-3">¿Qué te gustó más?</h2>
+                        <div class="flex flex-wrap gap-2" id="quick-feedback">
+                            <button onclick="toggleFeedback(this)" class="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Excelente servicio</button>
+                            <button onclick="toggleFeedback(this)" class="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Muy profesional</button>
+                            <button onclick="toggleFeedback(this)" class="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Rápido y eficiente</button>
+                            <button onclick="toggleFeedback(this)" class="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Amable y educado</button>
+                            <button onclick="toggleFeedback(this)" class="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all">Resolvió mi problema</button>
+                        </div>
+                    </div>
+
+                    <!-- Written Feedback -->
+                    <div class="bg-white rounded-2xl p-6 shadow-md mb-6">
+                        <h2 class="text-gray-800 font-medium mb-3">Cuéntanos más (opcional)</h2>
+                        <textarea id="feedback-text" class="w-full h-32 p-4 bg-gray-50 rounded-xl border border-gray-200 focus:border-blue-500 focus:outline-none resize-none" placeholder="Escribe aquí tu experiencia..." maxlength="500" oninput="updateCharCount()"></textarea>
+                        <p id="char-count" class="text-gray-400 text-xs mt-2">0/500 caracteres</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button id="submit-review" onclick="submitReview()" disabled class="w-full py-5 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 bg-gray-200 text-gray-400 cursor-not-allowed mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        <span class="text-xl font-medium">Enviar evaluación</span>
+                    </button>
+
+                    <!-- Skip Link -->
+                    <button onclick="navigateTo('home')" class="w-full mt-4 text-gray-600 py-2 hover:underline">
+                        Omitir por ahora
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUCCESS SCREEN (shown after review submission) -->
+        <div id="success" class="screen">
+            <div class="h-full w-full bg-gradient-to-br from-green-500 to-teal-500 flex flex-col items-center justify-center px-6">
+                <div class="text-center">
+                    <div class="mb-6 flex items-center justify-center">
+                        <div class="bg-white p-8 rounded-full shadow-2xl bounce-anim">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                    </div>
+                    <h1 class="text-white text-3xl font-semibold mb-4">¡Gracias por tu opinión!</h1>
+                    <p class="text-white/90 text-lg">
+                        Tu feedback nos ayuda a mejorar cada día
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentRating = 0;
+        let selectedFeedback = [];
+
+        // Navigation function
+        function navigateTo(screenId) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            
+            // Show selected screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                targetScreen.scrollTop = 0; // Scroll to top
+            }
+        }
+
+        // Star rating function
+        function setRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll('.star');
+            const ratingText = document.getElementById('rating-text');
+            const submitButton = document.getElementById('submit-review');
+            
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.remove('empty');
+                    star.classList.add('filled');
+                } else {
+                    star.classList.remove('filled');
+                    star.classList.add('empty');
+                }
+            });
+
+            // Update text based on rating
+            const ratingTexts = {
+                1: 'Necesita mejorar',
+                2: 'Regular',
+                3: 'Bueno',
+                4: 'Muy bueno',
+                5: '¡Excelente!'
+            };
+            ratingText.textContent = ratingTexts[rating] || '';
+
+            // Enable submit button if rating is selected
+            if (rating > 0) {
+                submitButton.disabled = false;
+                submitButton.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+                submitButton.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-teal-500', 'text-white', 'hover:shadow-2xl', 'transform', 'hover:scale-105', 'active:scale-95');
+            }
+        }
+
+        // Toggle quick feedback
+        function toggleFeedback(button) {
+            const text = button.textContent;
+            const index = selectedFeedback.indexOf(text);
+            
+            if (index > -1) {
+                selectedFeedback.splice(index, 1);
+                button.classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-teal-500', 'text-white');
+                button.classList.add('bg-gray-100', 'text-gray-700');
+            } else {
+                selectedFeedback.push(text);
+                button.classList.remove('bg-gray-100', 'text-gray-700');
+                button.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-teal-500', 'text-white');
+            }
+        }
+
+        // Update character count
+        function updateCharCount() {
+            const textarea = document.getElementById('feedback-text');
+            const charCount = document.getElementById('char-count');
+            charCount.textContent = `${textarea.value.length}/500 caracteres`;
+        }
+
+        // Submit review
+        function submitReview() {
+            if (currentRating > 0) {
+                navigateTo('success');
+                setTimeout(() => {
+                    navigateTo('home');
+                    // Reset review form
+                    currentRating = 0;
+                    selectedFeedback = [];
+                    document.getElementById('feedback-text').value = '';
+                    updateCharCount();
+                    const stars = document.querySelectorAll('.star');
+                    stars.forEach(star => {
+                        star.classList.remove('filled');
+                        star.classList.add('empty');
+                    });
+                    const feedbackButtons = document.querySelectorAll('#quick-feedback button');
+                    feedbackButtons.forEach(button => {
+                        button.classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-teal-500', 'text-white');
+                        button.classList.add('bg-gray-100', 'text-gray-700');
+                    });
+                }, 2000);
+            }
+        }
+
+        // Notification tabs
+        function showNotificationTab(tab) {
+            const notificationsTab = document.getElementById('tab-notifications');
+            const tipsTab = document.getElementById('tab-tips');
+            const notificationsContent = document.getElementById('content-notifications');
+            const tipsContent = document.getElementById('content-tips');
+
+            if (tab === 'notifications') {
+                notificationsTab.classList.remove('bg-white/50', 'text-gray-600');
+                notificationsTab.classList.add('bg-white', 'text-blue-600', 'shadow-md');
+                tipsTab.classList.remove('bg-white', 'text-blue-600', 'shadow-md');
+                tipsTab.classList.add('bg-white/50', 'text-gray-600');
+                notificationsContent.style.display = 'block';
+                tipsContent.style.display = 'none';
+            } else {
+                tipsTab.classList.remove('bg-white/50', 'text-gray-600');
+                tipsTab.classList.add('bg-white', 'text-blue-600', 'shadow-md');
+                notificationsTab.classList.remove('bg-white', 'text-blue-600', 'shadow-md');
+                notificationsTab.classList.add('bg-white/50', 'text-gray-600');
+                tipsContent.style.display = 'block';
+                notificationsContent.style.display = 'none';
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start with splash screen
+            navigateTo('splash');
+        });
+    </script>
+</body>
+</html>
